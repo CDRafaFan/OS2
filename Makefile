@@ -1,8 +1,8 @@
 default:
-        gcc -o date.o date.c
-        gcc -o ls.o ls.c
-        gcc -o rm.o rm.c
-        gcc -o cat.o cat.c
-        gcc -o mkdir.o mkdir.c
-        gcc OS2.c
-        ./a.out
+	gcc rm.c -o rm.o
+	gcc mkdir.c -o mkdir.o
+	gcc ls.c -o ls.o
+	gcc cat.c -o cat.o
+	gcc date.c -o date.o
+	gcc OS2.c 
+	./a.out
