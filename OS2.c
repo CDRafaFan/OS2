@@ -590,7 +590,6 @@ void cd_exec(char **args)
         calldate(args);
         return;
     }
-    else
     if(strcmp(args[0],"date")==0 && strcmp(args[countargs-1],"&t")==0)
     {
         char *u;char *py;
