@@ -38,6 +38,10 @@ int main(int argc,char* argv[])
         //comp[1]=argv[1][1];
         if(strcmp(argv[2],"-p")!=0 && strcmp(argv[2],"-v")!=0)
         {
+            char *thiscwd;
+            char *buffer=NULL;
+            size_t size=0;
+            thiscwd=getcwd(buffer,size);
             /*int flag=0;
             for(int i=0;argv[1][i]!='\0';i++)
             {
@@ -92,10 +96,59 @@ int main(int argc,char* argv[])
                 }
                 if(flag==1)
                 {
-                    printf("mkdir: cannot create directory '%s': No such file or directory\n",list[i]);
+                    int flag2=0;int ind;
+                    for(int k=strlen(list[i])-1;k>=0;k--)
+                    {
+                        if(list[i][k]=='/')
+                        {
+                            ind=k;
+                            break;
+                        }
+                    }
+                    for(int k=0;k<ind;k++)
+                    {
+                        char *newf;
+                        newf=(char *)malloc(256*sizeof(char));int y=0;int l=k;
+                        for(int p=l;list[i][p]!='/';p++)
+                        {
+                            newf[y++]=list[i][p];
+                            k++;
+                        }
+                        int check=chdir(newf);
+                        if(check!=0)
+                        {
+                            flag2=1;
+                            break;
+                        }
+                    }
+                    if(flag2==1)
+                    {
+                        printf("mkdir: cannot create directory '%s': No such file or directory\n",list[i]);
+                        chdir(thiscwd);
+                    }
+                    else
+                    {
+                        int h;
+                        char *final;
+                        final=(char *)malloc(256*sizeof(char *));int u=0;
+                        for(int t=ind+1;t<strlen(list[i]);t++)
+                        final[u++]=list[i][t];
+                        int ch=chdir(final);
+                        if(ch==0)
+                        {
+                            printf("mkdir: cannot create directory '%s': File exists\n",list[i]);
+                            chdir(thiscwd);
+                        }
+                        else
+                        {
+                            h=mkdir(final,0777);
+                            chdir(thiscwd);
+                        }
+                    }
                 }
                 else
                 {
+                    //int gu=chdir(thiscwd);
                     int gt=chdir(list[i]);
                     if(gt==0)
                     {
@@ -387,6 +440,10 @@ int main(int argc,char* argv[])
         comp[1]=argv[1][1];
         if(strcmp(comp,"-p")!=0 && strcmp(comp,"-v")!=0)
         {
+            char *thiscwd;
+            char *buffer=NULL;
+            size_t size=0;
+            thiscwd=getcwd(buffer,size);
             /*int flag=0;
             for(int i=0;argv[1][i]!='\0';i++)
             {
@@ -410,11 +467,75 @@ int main(int argc,char* argv[])
                 check=mkdir(finaldir,0777);
             }*/
             char *list[256];int indct=0;
-            for(int i=0;i<strlen(argv[1]);i++)
+            for(int i=0;i<strlen(argv[1])-1;i++)
             {
+                /*for(int i=0;i<indct;i++)
+            {
+                int flag=0;
+                for(int j=0;j<strlen(list[i]);j++)
+                {
+                    if(list[i][j]=='/')
+                    {
+                        flag=1;
+                        break;
+                    }
+                }
+                if(flag==1)
+                {
+                    int flag2=0;int ind;
+                    for(int k=strlen(list[i])-1;k>=0;k--)
+                    {
+                        if(list[i][k]=='/')
+                        {
+                            ind=k;
+                            break;
+                        }
+                    }
+                    for(int k=0;k<ind;k++)
+                    {
+                        char *newf;
+                        newf=(char *)malloc(256*sizeof(char));int y=0;int l=k;
+                        for(int p=l;list[i][p]!='/';p++)
+                        {
+                            newf[y++]=list[i][p];
+                            k++;
+                        }
+                        k++;
+                        int check=chdir(newf);
+                        if(check!=0)
+                        {
+                            flag2=1;
+                            break;
+                        }
+                    }
+                    if(flag2==1)
+                    printf("mkdir: cannot create directory '%s': No such file or directory\n",list[i]);
+                    else
+                    {
+                        int h;
+                        char *final;
+                        final=(char *)malloc(256*sizeof(char *));int u=0;
+                        for(int t=ind+1;t<strlen(list[i]);t++)
+                        final[u++]=list[i][t];
+                        h=mkdir(final,0777);
+                    }
+                }
+                else
+                {
+                    int gt=chdir(list[i]);
+                    if(gt==0)
+                    {
+                        printf("mkdir: cannot create directory '%s': File exists\n",list[i]);
+                    }
+                    else
+                    {
+                        int gy;
+                        gy=mkdir(list[i],0777);
+                    }
+                }*/
                 char *newst;int indct2=0;
                 newst=(char *)malloc(256*sizeof(char));
-                for(int j=i;j<strlen(argv[1]);j++)
+                for(int j=i;j<strlen(argv[1])-1;j++)
                 {
                     if(argv[1][j]==' ')
                     {
@@ -427,7 +548,7 @@ int main(int argc,char* argv[])
                 }
                 list[indct++]=newst;
             }
-            for(int i=0;i<indct;i++)
+            /*for(int i=0;i<indct;i++)
             {
                 int flag=0;
                 for(int j=0;j<strlen(list[i]);j++)
@@ -444,6 +565,84 @@ int main(int argc,char* argv[])
                 }
                 else
                 {
+                    int gt=chdir(list[i]);
+                    if(gt==0)
+                    {
+                        printf("mkdir: cannot create directory '%s': File exists\n",list[i]);
+                    }
+                    else
+                    {
+                        int gy;
+                        gy=mkdir(list[i],0777);
+                    }
+                }
+            }*/
+            for(int i=0;i<indct;i++)
+            {
+                int flag=0;
+                for(int j=0;j<strlen(list[i]);j++)
+                {
+                    if(list[i][j]=='/')
+                    {
+                        flag=1;
+                        break;
+                    }
+                }
+                if(flag==1)
+                {
+                    int flag2=0;int ind;
+                    for(int k=strlen(list[i])-1;k>=0;k--)
+                    {
+                        if(list[i][k]=='/')
+                        {
+                            ind=k;
+                            break;
+                        }
+                    }
+                    for(int k=0;k<ind;k++)
+                    {
+                        char *newf;
+                        newf=(char *)malloc(256*sizeof(char));int y=0;int l=k;
+                        for(int p=l;list[i][p]!='/';p++)
+                        {
+                            newf[y++]=list[i][p];
+                            k++;
+                        }
+                        int check=chdir(newf);
+                        if(check!=0)
+                        {
+                            flag2=1;
+                            break;
+                        }
+                    }
+                    if(flag2==1)
+                    {
+                        printf("mkdir: cannot create directory '%s': No such file or directory\n",list[i]);
+                        chdir(thiscwd);
+                    }
+                    else
+                    {
+                        int h;
+                        char *final;
+                        final=(char *)malloc(256*sizeof(char *));int u=0;
+                        for(int t=ind+1;t<strlen(list[i]);t++)
+                        final[u++]=list[i][t];
+                        int ch=chdir(final);
+                        if(ch==0)
+                        {
+                            printf("mkdir: cannot create directory '%s': File exists\n",list[i]);
+                            chdir(thiscwd);
+                        }
+                        else
+                        {
+                            h=mkdir(final,0777);
+                            chdir(thiscwd);
+                        }
+                    }
+                }
+                else
+                {
+                    //int gu=chdir(thiscwd);
                     int gt=chdir(list[i]);
                     if(gt==0)
                     {
