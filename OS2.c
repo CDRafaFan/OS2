@@ -7,6 +7,46 @@
 #include <libgen.h>
 #include <pthread.h>
 char *parentcwd;
+void callls(char **args)
+{
+    pid_t t=fork();
+    if(t<0)
+    {
+        printf("Failed\n");
+        return;
+    }
+    if(t==0)
+    {
+        char *mypath;
+        mypath=(char*)malloc(256*sizeof(char));int ind=0;
+        for(int i=0;parentcwd[i]!='\0';i++)
+        {
+            mypath[ind++]=parentcwd[i];
+        }
+        char *st="/ls.o";
+        for(int i=0;i<5;i++)
+        {
+            mypath[ind++]=st[i];
+        }
+        char *pass;int ind2=0;
+        pass=(char*)malloc(256*sizeof(char));
+        for(int i=1;args[i]!=NULL;i++)
+        {
+            for(int j=0;args[i][j]!='\0';j++)
+            {
+                pass[ind2++]=args[i][j];
+            }
+            pass[ind2++]=' ';
+        }
+        char *arr[3]={mypath,pass,NULL};
+        char *env[1]={NULL};
+        execve(mypath,arr,env);
+    }
+    else
+    {
+        wait(NULL);
+    }
+}
 char* cd_read_line()
 {
     char *line=NULL;
@@ -56,6 +96,14 @@ void echo(char **args)
     if(args[1]==NULL)
     {
         printf("\n");
+        return;
+    }
+    if(strcmp(args[1],"*")==0)
+    {
+        char **argt;
+        argt=(char **)malloc(256*sizeof(char **));
+        argt[0]="ls";
+        callls(argt);
         return;
     }
     if(strcmp(args[1],"-n")==0)
@@ -254,7 +302,7 @@ void callrm(char **args)
         wait(NULL);
     }
 }
-void callls(char **args)
+/*void callls(char **args)
 {
     pid_t t=fork();
     if(t<0)
@@ -293,7 +341,7 @@ void callls(char **args)
     {
         wait(NULL);
     }
-}
+}*/
 void callcat(char **args)
 {
     pid_t t=fork();
@@ -541,9 +589,15 @@ void cd_exec(char **args)
     {
         countargs++;
     }
-    if(strcmp(args[0],"pwd")==0 || strcmp(args[0],"pwd\n")==0)
+    if((strcmp(args[0],"pwd")==0 || strcmp(args[0],"pwd\n")==0) && (args[1]==NULL || strcmp(args[1],"-P")==0 || strcmp(args[1],"-L")==0))
     {
         pwd();
+        return;
+    }
+    else
+    if(strcmp(args[0],"pwd")==0 && (strcmp(args[1],"-P")!=0 && strcmp(args[1],"-L")!=0))
+    {
+        printf("Invalid option\n");
         return;
     }
     else
